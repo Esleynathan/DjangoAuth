@@ -25,10 +25,10 @@
             <h1>Logar</h1>
             <hr>
             <form method="POST" action="{% url 'valida_login' %}">{% csrf_token %}
-            <label> Email </label> 
-            <input name="email" class="form-control" type="email" placegholder="Email...">
+            <label> Nome: </label> 
+            <input name="nome" class="form-control" type="text" placegholder="Nome...">
             <br>
-            <label> Senha </label> 
+            <label> Senha: </label> 
             <input name="senha" class="form-control" type="password" placegholder="Senha...">
             <br>
             <input class="btn btn-success btn-lg" type="submit" value="Enviar">

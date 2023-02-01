@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from . models import Usuario
 from django.shortcuts import redirect
 from hashlib import sha256
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.contrib.messages import constants
 from django.contrib.auth.models import User
 
@@ -35,10 +35,12 @@ def valida_cadastro (request):
     if User.objects.filter (email = email).exists():
         messages.add_message(request, constants.ERROR, 'Email já cadastrado.')
         return redirect('/auth/cadastro/')
+    
+    if User.objects.filter (username = nome).exists():
+        messages.add_message(request, constants.ERROR, 'Já existe um usuario com esse nome.')
+        return redirect('/auth/cadastro/')
 
     try:
-        senha = sha256 (senha.encode()).hexdigest()
-
         usuario = User.objects.create_user(username = nome, email = email, password = senha)
         usuario.save()
                 
@@ -50,17 +52,16 @@ def valida_cadastro (request):
         return redirect('/auth/cadastro/')
 
 def valida_login(request):
-    email = request.POST.get('email')    
+    nome = request.POST.get('nome')    
     senha = request.POST.get('senha')
-    senha = sha256 (senha.encode()).hexdigest()
 
-    usuario = Usuario.objects.filter(email = email).filter(senha = senha)
-    if len(usuario) == 0:        
+    usuario = auth.authenticate(request, username = nome, password = senha)
+
+    if not usuario:        
         messages.add_message(request, constants.WARNING, 'Email ou senha invalidos.')
         return redirect ('/auth/login/')
-    elif len(usuario) > 0:
-        request.session['logado'] = True
-        request.session['usuario_id'] = usuario[0].id       
+    else:
+        auth.login(request, usuario)    
         return redirect ('/plataforma/home')
 
 def sair(request):    
