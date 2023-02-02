@@ -5,7 +5,7 @@ from hashlib import sha256
 from django.contrib import messages, auth
 from django.contrib.messages import constants
 from django.contrib.auth.models import User
-from . models import EnderecoUsuario
+from .models import Users
 
 def login (request):
     if request.user.is_authenticated:
@@ -51,10 +51,9 @@ def valida_cadastro (request):
         usuario = User.objects.create_user(username = nome, email = email, password = senha)
         usuario.save()
 
-        endereco_cadastro = EnderecoUsuario(cep = cep,
-                                            rua = rua, 
-                                            numero = numero,
-                                            usuario = usuario,)
+        endereco_cadastro = Users(cep = cep,
+                                    rua = rua, 
+                                    numero = numero,)
         endereco_cadastro.save()
                 
         messages.add_message(request, constants.SUCCESS, 'Cadastro realizado com suceso.')
