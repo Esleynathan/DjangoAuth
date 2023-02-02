@@ -65,6 +65,6 @@ def valida_login(request):
         return redirect ('/plataforma/home')
 
 def sair(request):    
-    request.session.flush()    
+    auth.logout(request)
     messages.add_message(request, constants.WARNING, 'Faça login antes de acessar o sistema.')
     return redirect('/auth/login/')
