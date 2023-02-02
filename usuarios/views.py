@@ -8,6 +8,8 @@ from django.contrib.messages import constants
 from django.contrib.auth.models import User
 
 def login (request):
+    if request.user.is_authenticated:
+        return redirect('/plataforma/home')
     status = request.GET.get ('status')
     return render(request, 'login.html', {'status': status})
     
@@ -17,6 +19,8 @@ def cadastro (request):
     
 
 def valida_cadastro (request):
+    if request.user.is_authenticated:
+        return redirect('/plataforma/home')
     nome = request.POST.get('nome')    
     email = request.POST.get('email')    
     senha = request.POST.get('senha')
