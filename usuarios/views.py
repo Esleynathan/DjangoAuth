@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from . models import Usuario
 from django.shortcuts import redirect
 from hashlib import sha256
 from django.contrib import messages, auth
 from django.contrib.messages import constants
 from django.contrib.auth.models import User
+from . models import EnderecoUsuario
 
 def login (request):
     if request.user.is_authenticated:
@@ -24,6 +24,9 @@ def valida_cadastro (request):
     nome = request.POST.get('nome')    
     email = request.POST.get('email')    
     senha = request.POST.get('senha')
+    cep = request.POST.get('cep')
+    rua = request.POST.get('rua')
+    numero = request.POST.get('numero')
 
     if len(nome.strip()) == 0 or len(email.strip()) == 0:        
         messages.add_message(request, constants.ERROR, 'Nome e email não podem estar vazio.')
@@ -34,7 +37,7 @@ def valida_cadastro (request):
         messages.add_message(request, constants.ERROR, 'Sua senha deve ter no minimo 8 caracteres.')
         return redirect('/auth/cadastro/')
     
-    usuario = Usuario.objects.filter(email = email)
+    usuario = User.objects.filter(email = email)
 
     if User.objects.filter (email = email).exists():
         messages.add_message(request, constants.ERROR, 'Email já cadastrado.')
@@ -47,6 +50,12 @@ def valida_cadastro (request):
     try:
         usuario = User.objects.create_user(username = nome, email = email, password = senha)
         usuario.save()
+
+        endereco_cadastro = EnderecoUsuario(cep = cep,
+                                            rua = rua, 
+                                            numero = numero,
+                                            usuario = usuario,)
+        endereco_cadastro.save()
                 
         messages.add_message(request, constants.SUCCESS, 'Cadastro realizado com suceso.')
         return redirect('/auth/cadastro/')
